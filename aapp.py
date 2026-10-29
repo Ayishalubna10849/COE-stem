@@ -113,7 +113,7 @@ st.markdown("""
     .badge-success { background-color: #DCFCE7; color: #166534; }
     .badge-gold { background-color: #FEF3C7; color: #92400E; }
 </style>
-""", unsafe_allow_allowed_html=True)
+""", unsafe_allow_html=True)
 
 
 if 'step' not in st.session_state:
