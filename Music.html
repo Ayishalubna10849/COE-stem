@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beat Al-Majlis 🎤</title>
+
+<style>
+:root {
+  --bg: #fff8f2;
+  --panel: #ffffff;
+  --lavender: #e6dcff;
+  --pink: #ffdce8;
+  --mint: #d9f5e5;
+  --peach: #ffe5d0;
+  --yellow: #fff1b8;
+  --purple: #8974c8;
+  --text: #514765;
+  --muted: #81768f;
+  --border: #eee4f3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  text-align: center;
+  padding: 32px 15px 24px;
+  background: linear-gradient(120deg, var(--pink), var(--lavender), var(--mint));
+  border-bottom: 3px dashed #ffffff;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  margin: 0;
+  color: #65528f;
+}
+
+header p { margin-bottom: 0; }
+
+main {
+  max-width: 1050px;
+  margin: auto;
+  padding: 20px 14px 35px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 5px 0 #eee5f3;
+}
+
+.full { grid-column: 1 / -1; }
+
+h2 { margin-top: 0; color: #7764aa; }
+h3 { color: #7764aa; }
+
+.teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.team {
+  padding: 15px;
+  border-radius: 18px;
+  color: var(--text);
+}
+
+.a {
+  background: var(--lavender);
+  border: 2px solid #d1c2f8;
+}
+
+.b {
+  background: var(--pink);
+  border: 2px solid #ffc7dc;
+}
+
+.score {
+  font-size: 2.8rem;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 11px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: #fffafd;
+  color: var(--text);
+  font: inherit;
+  outline-color: var(--purple);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+
+.row > * { flex: 1; min-width: 0; }
+
+button {
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 11px 15px;
+  margin-top: 10px;
+  font: inherit;
+  font-weight: bold;
+  color: var(--text);
+  background: var(--yellow);
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 #e9dcb0;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.greenbtn { background: var(--mint); border-color: #c4e9d2; }
+.bluebtn { background: var(--lavender); border-color: #d1c2f8; }
+.pinkbtn { background: var(--pink); border-color: #ffc7dc; }
+.secondary { background: var(--peach); border-color: #ffd6b8; }
+
+#active {
+  background: #fff9fd;
+  border: 2px dashed #e4d8f5;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 5px 10px;
+  background: var(--lavender);
+  border-radius: 20px;
+  color: #65528f;
+  font-size: .8rem;
+  font-weight: bold;
+}
+
+#player {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+#timer {
+  font-size: 2.7rem;
+  font-weight: bold;
+  color: #8c6ac0;
+  text-align: center;
+  margin: 12px 0;
+}
+
+.meter {
+  height: 12px;
+  background: #f1eaf7;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.meter div {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #bcebd0, #ffe6a6, #ffc6dc);
+  transition: width .1s linear;
+}
+
+.status {
+  background: #f8f3ff;
+  border: 1px solid #e9dff7;
+  border-radius: 13px;
+  padding: 12px;
+  margin: 12px 0;
+  min-height: 42px;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 150px;
+  background: #fffaff;
+  border: 2px solid var(--border);
+  border-radius: 15px;
+}
+
+.log {
+  max-height: 220px;
+  overflow: auto;
+}
+
+.log div {
+  padding: 9px;
+  margin-bottom: 7px;
+  border-radius: 10px;
+  background: #fff5fa;
+  overflow-wrap: anywhere;
+}
+
+.notice {
+  background: #fff8df;
+  border: 2px dashed #f1d99b;
+  border-radius: 13px;
+  padding: 12px;
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: #f0e9ff;
+}
+
+@media (max-width: 700px) {
+  main { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .row { gap: 8px; }
+  .panel { padding: 15px; }
+  button { max-width: 100%; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>🎤 Beat Al-Majlis 🎶</h1>
+  <p>A pastel music challenge for four players! 🌷</p>
+</header>
+
+<main>
+<section class="panel">
+  <h2>🏆 Scoreboard</h2>
+
+  <div class="teams">
+    <div class="team a">
+      <b>💜 Team A</b>
+      <div class="score" id="sa">0</div>
+      <small id="la">Player 1 · Player 2</small>
+    </div>
+
+    <div class="team b">
+      <b>🩷 Team B</b>
+      <div class="score" id="sb">0</div>
+      <small id="lb">Player 3 · Player 4</small>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Rounds per player</label>
+      <select id="rounds">
+        <option>1</option>
+        <option selected>2</option>
+        <option>3</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Turn length</label>
+      <select id="length">
+        <option value="15">15 seconds</option>
+        <option value="30" selected>30 seconds</option>
+        <option value="45">45 seconds</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="start" class="greenbtn">🌸 Start match</button>
+  <button id="reset" class="secondary">↻ Reset</button>
+
+  <p class="muted">
+    Turn order: A1 → B1 → A2 → B2. Cheer each other on!
+  </p>
+</section>
+
+<section class="panel">
+  <h2>👥 Player setup</h2>
+
+  <div class="row">
+    <div>
+      <label>Team A · Player 1</label>
+      <input id="p1" value="Player 1" maxlength="24">
+    </div>
+    <div>
+      <label>Team A · Player 2</label>
+      <input id="p2" value="Player 2" maxlength="24">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Team B · Player 1</label>
+      <input id="p3" value="Player 3" maxlength="24">
+    </div>
+    <div>
+      <label>Team B · Player 2</label>
+      <input id="p4" value="Player 4" maxlength="24">
+    </div>
+  </div>
+
+  <div class="notice" style="margin-top:15px">
+    🎵 Host tip: Use original humming patterns or music you have permission to use.
+  </div>
+</section>
+
+<section class="panel">
+  <h2>🎶 Current challenge</h2>
+
+  <div id="active">
+    <span class="pill" id="roundlabel">NOT STARTED</span>
+    <div id="player">Ready to play? 🌷</div>
+    <p id="prompt">Press Start match to begin!</p>
+    <div id="timer">00:30</div>
+    <div class="meter"><div id="bar"></div></div>
+
+    <button id="mic" class="bluebtn" disabled>🎙 Enable microphone</button>
+    <button id="begin" disabled>▶ Start turn</button>
+    <button id="end" class="secondary" disabled>Finish turn</button>
+  </div>
+
+  <div class="status" id="status">
+    Your microphone audio stays in your browser.
+  </div>
+
+  <canvas id="graph" width="700" height="150"></canvas>
+
+  <p class="muted">
+    The graph shows detected pitch while you hum. Scores are estimates,
+    not professional vocal assessments or full AI song recognition.
+  </p>
+</section>
+
+<section class="panel">
+  <h2>🎀 Match control</h2>
+  <button id="skip" class="secondary" disabled>Skip player</button>
+  <button id="tie" class="pinkbtn" disabled>⭐ Tie-breaker</button>
+
+  <div class="status" id="state">The match hasn't started yet.</div>
+
+  <h3>📝 Turn history</h3>
+  <div class="log" id="history">No turns yet.</div>
+</section>
+
+<section class="panel full">
+  <h2>🌈 How scoring works</h2>
+  <div class="row">
+    <div class="status">🎼 Pitch pattern<br><b>Up to 70 points</b></div>
+    <div class="status">🎤 Voiced sound<br><b>Up to 20 points</b></div>
+    <div class="status">⭐ Host bonus<br><b>Up to 10 points</b></div>
+  </div>
+  <p class="muted">
+    The prototype estimates pitch movement and microphone activity.
+    The host can award any bonus points verbally; bonus points are not
+    automatically included in the score. It does not recognize lyrics
+    or reliably identify songs.
+  </p>
+</section>
+</main>
+
+<footer class="muted">
+  Made with 🎀 for music, friends and fun!<br>
+  Microphone access requires HTTPS or localhost. Audio is not uploaded or stored.
+</footer>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const canvas = $("graph");
+  const g = canvas.getContext("2d");
+
+  const players = () => [
+    { n: $("p1").value || "Player 1", t: "A" },
+    { n: $("p3").value || "Player 3", t: "B" },
+    { n: $("p2").value || "Player 2", t: "A" },
+    { n: $("p4").value || "Player 4", t: "B" }
+  ];
+
+  const patterns = [
+    { name: "Warm-up hum", n: [220,247,262,247,220,196] },
+    { name: "Up and down", n: [196,220,247,262,247,220,196] },
+    { name: "High-low challenge", n: [262,294,330,294,262,220] },
+    { name: "Majlis melody", n: [220,262,247,220,196,220] }
+  ];
+
+  let ac, analyser, stream;
+  let running = false, started = false, tieMode = false;
+  let idx = 0, done = 0, total = 8, left = 30;
+  let interval = null, raf = null;
+  let score = { A: 0, B: 0 };
+  let pitches = [], samples = [];
+  let pattern = patterns[0];
+
+  function labels() {
+    const p = players();
+    $("la").textContent = p.filter(x => x.t === "A").map(x => x.n).join(" · ");
+    $("lb").textContent = p.filter(x => x.t === "B").map(x => x.n).join(" · ");
+  }
+
+  function buttons() {
+    $("mic").disabled = !started || running || !!analyser;
+    $("begin").disabled = !started || running;
+    $("end").disabled = !running;
+    $("skip").disabled = !started || running;
+    $("tie").disabled = !started || running;
+  }
+
+  function drawGraph() {
+    g.clearRect(0, 0, canvas.width, canvas.height);
+    g.fillStyle = "#fffaff";
+    g.fillRect(0, 0, canvas.width, canvas.height);
+
+    g.strokeStyle = "#eee4f3";
+    for (let y = 20; y < 150; y += 25) {
+      g.beginPath();
+      g.moveTo(0, y);
+      g.lineTo(700, y);
+      g.stroke();
+    }
+
+    g.fillStyle = "#81768f";
+    g.font = '14px "Comic Sans MS", cursive';
+    g.fillText("Your pitch journey 🎵", 10, 16);
+
+    if (pitches.length < 2) {
+      g.fillText("Start humming to see your pitch!", 15, 80);
+      return;
+    }
+
+    g.strokeStyle = "#8c79c8";
+    g.lineWidth = 3;
+    g.beginPath();
+
+    pitches.slice(-100).forEach((f, i, arr) => {
+      const x = 10 + i / Math.max(1, arr.length - 1) * 680;
+      const y = 135 - Math.max(0, Math.min(1, (f - 100) / 350)) * 110;
+      if (i) g.lineTo(x, y);
+      else g.moveTo(x, y);
+    });
+
+    g.stroke();
+  }
+
+  function time(s) {
+    return "00:" + String(Math.ceil(Math.max(0, s))).padStart(2, "0");
+  }
+
+  function prepare() {
+    const p = players()[idx % 4];
+    pattern = patterns[(done + idx) % patterns.length];
+    left = Number($("length").value);
+    pitches = [];
+    samples = [];
+
+    $("roundlabel").textContent = tieMode
+      ? "⭐ TIE-BREAKER"
+      : `TURN ${done + 1} / ${total}`;
+
+    $("player").textContent = p.n;
+    $("prompt").textContent =
+      (p.t === "A" ? "💜 Team A" : "🩷 Team B") +
+      " · " + pattern.name + " — hum a similar up-and-down pattern!";
+
+    $("timer").textContent = time(left);
+    $("bar").style.width = "100%";
+    $("status").textContent = "Enable the microphone, then start the turn.";
+    drawGraph();
+    buttons();
+  }
+
+  async function enableMic() {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Microphone access needs HTTPS or localhost.");
+      }
+
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true }
+      });
+
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      await ac.resume();
+
+      analyser = ac.createAnalyser();
+      analyser.fftSize = 2048;
+      ac.createMediaStreamSource(stream).connect(analyser);
+
+      $("status").textContent = "Microphone ready! You're all set 🌸";
+      buttons();
+    } catch (e) {
+      $("status").textContent =
+        "Microphone unavailable: " + e.message +
+        " Check browser permission and use HTTPS or localhost.";
+    }
+  }
+
+  function detectPitch(buf, sr) {
+    let rms = 0;
+    for (const v of buf) rms += v * v;
+
+    if (Math.sqrt(rms / buf.length) < 0.012) return -1;
+
+    let best = 0, bestCorr = 0;
+
+    for (let lag = 30; lag < Math.min(500, buf.length / 2); lag++) {
+      let c = 0;
+      for (let i = 0; i < buf.length - lag; i++) {
+        c += buf[i] * buf[i + lag];
+      }
+      if (c > bestCorr) {
+        bestCorr = c;
+        best = lag;
+      }
+    }
+
+    return best ? sr / best : -1;
+  }
+
+  function listen() {
+    if (!running || !analyser) return;
+
+    const b = new Float32Array(analyser.fftSize);
+    analyser.getFloatTimeDomainData(b);
+
+    const f = detectPitch(b, ac.sampleRate);
+
+    if (f > 70 && f < 700) {
+      samples.push(f);
+      pitches.push(f);
+      if (pitches.length > 100) pitches.shift();
+
+      $("status").textContent = "Pitch detected: " + Math.round(f) + " Hz 🎵";
+      drawGraph();
+    }
+
+    raf = requestAnimationFrame(listen);
+  }
+
+  function stopTimer() {
+    clearInterval(interval);
+    interval = null;
+  }
+
+  function endTurn() {
+    if (!running) return;
+
+    running = false;
+    stopTimer();
+    cancelAnimationFrame(raf);
+
+    const p = players()[idx % 4];
+    const activity = Math.min(20, Math.round(samples.length / 30 * 20));
+    let pitchPts = 0;
+
+    if (samples.length > 3) {
+      const m = samples.map(f => Math.round(69 + 12 * Math.log2(f / 440)));
+      let hits = 0;
+
+      for (let i = 1; i < m.length; i++) {
+        const a = Math.sign(m[i] - m[i - 1]);
+        const j = Math.floor(i / (m.length - 1) * (pattern.n.length - 1));
+        const k = Math.max(0, Math.floor((i - 1) / (m.length - 1) * (pattern.n.length - 1)));
+        const b = Math.sign(pattern.n[j] - pattern.n[k]);
+
+        if (a === b || Math.abs(m[i] - m[i - 1]) <= 1) hits++;
+      }
+
+      pitchPts = Math.round(hits / Math.max(1, m.length - 1) * 70);
+    }
+
+    const pts = pitchPts + activity;
+    score[p.t] += pts;
+
+    $("sa").textContent = score.A;
+    $("sb").textContent = score.B;
+
+    const item = document.createElement("div");
+    item.textContent =
+      `${p.n} (${p.t === "A" ? "Team A" : "Team B"}) — ${pts} points ` +
+      `(pitch ${pitchPts}/70, activity ${activity}/20)`;
+
+    $("history").prepend(item);
+    $("state").textContent = `${p.n} scored ${pts} points 🌷`;
+
+    if (tieMode) {
+      done++;
+
+      if (done >= 2) {
+        finish();
+        return;
+      }
+
+      idx = 1;
+      prepare();
+      $("roundlabel").textContent = "TIE-BREAKER · TEAM B";
+      $("prompt").textContent = "Sudden death! Team B takes its turn.";
+      buttons();
+      return;
+    }
+
+    done++;
+    idx = (idx + 1) % 4;
+
+    if (done >= total) {
+      if (score.A === score.B) {
+        $("state").textContent = "It's a tie! Start the tie-breaker ⭐";
+        started = true;
+        buttons();
+        $("tie").disabled = false;
+        return;
+      }
+      finish();
+    } else {
+      prepare();
+    }
+
+    buttons();
+  }
+
+  function finish() {
+    running = false;
+    started = false;
+    stopTimer();
+    buttons();
+
+    const winner = score.A === score.B
+      ? "It's a tie! 💛"
+      : score.A > score.B
+        ? "💜 Team A wins!"
+        : "🩷 Team B wins!";
+
+    $("roundlabel").textContent = "MATCH OVER";
+    $("player").textContent = winner;
+    $("prompt").textContent =
+      `Final score: Team A ${score.A} — ${score.B} Team B`;
+    $("timer").textContent = "🏆";
+    $("bar").style.width = "0%";
+    $("state").textContent = winner + " Great game!";
+    $("status").textContent = "Match complete! Reset to play again 🌸";
+  }
+
+  function start() {
+    stopTimer();
+    started = true;
+    running = false;
+    tieMode = false;
+    idx = 0;
+    done = 0;
+    total = Number($("rounds").value) * 4;
+    score = { A: 0, B: 0 };
+
+    $("sa").textContent = "0";
+    $("sb").textContent = "0";
+    $("history").textContent = "";
+    labels();
+    $("state").textContent = "Match in progress 🌷";
+    prepare();
+    buttons();
+  }
+
+  function begin() {
+    if (!analyser) {
+      $("status").textContent = "Please enable the microphone first.";
+      return;
+    }
+
+    if (running) return;
+
+    running = true;
+    left = Number($("length").value);
+    buttons();
+
+    $("status").textContent = "Listening… hum your pattern! 🎶";
+    listen();
+
+    interval = setInterval(() => {
+      left = Math.max(0, left - 0.1);
+      $("timer").textContent = time(left);
+      $("bar").style.width = (left / Number($("length").value) * 100) + "%";
+
+      if (left <= 0) endTurn();
+    }, 100);
+  }
+
+  function skip() {
+    if (!started || running) return;
+
+    const p = players()[idx % 4];
+    const item = document.createElement("div");
+    item.textContent = p.n + " — skipped (0 points)";
+    $("history").prepend(item);
+
+    done++;
+    idx = (idx + 1) % 4;
+
+    if (done >= total) {
+      if (score.A === score.B) {
+        $("state").textContent = "It's a tie! Start the tie-breaker ⭐";
+        $("tie").disabled = false;
+        return;
+      }
+      finish();
+    } else {
+      prepare();
+    }
+  }
+
+  function tie() {
+    if (score.A !== score.B) {
+      $("status").textContent = "A tie-breaker is only for a tied score.";
+      return;
+    }
+
+    tieMode = true;
+    started = true;
+    done = 0;
+    idx = 0;
+    total = 2;
+    prepare();
+
+    $("roundlabel").textContent = "TIE-BREAKER · TEAM A";
+    $("prompt").textContent = "Sudden death! Team A goes first.";
+    buttons();
+  }
+
+  function reset() {
+    stopTimer();
+    cancelAnimationFrame(raf);
+    running = started = tieMode = false;
+    score = { A: 0, B: 0 };
+    idx = done = 0;
+
+    $("sa").textContent = "0";
+    $("sb").textContent = "0";
+    $("roundlabel").textContent = "NOT STARTED";
+    $("player").textContent = "Ready to play? 🌷";
+    $("prompt").textContent = "Press Start match to begin!";
+    $("timer").textContent = "00:30";
+    $("bar").style.width = "100%";
+    $("status").textContent = "Your microphone audio stays in your browser.";
+    $("state").textContent = "The match hasn't started yet.";
+    $("history").textContent = "No turns yet.";
+
+    pitches = [];
+    samples = [];
+    drawGraph();
+    buttons();
+  }
+
+  $("start").onclick = start;
+  $("reset").onclick = reset;
+  $("mic").onclick = enableMic;
+  $("begin").onclick = begin;
+  $("end").onclick = endTurn;
+  $("skip").onclick = skip;
+  $("tie").onclick = tie;
+
+  ["p1", "p2", "p3", "p4"].forEach(id =>
+    $(id).addEventListener("input", labels)
+  );
+
+  window.addEventListener("beforeunload", () => {
+    stopTimer();
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    if (ac) ac.close();
+  });
+
+  labels();
+  drawGraph();
+  buttons();
+})();
+</script>
+</body>
+</html>
