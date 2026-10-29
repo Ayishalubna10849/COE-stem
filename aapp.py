@@ -277,6 +277,11 @@ elif st.session_state.step == 3:
     with col_tb:
         team_b = st.multiselect("Team B Players", options=updated_names, default=[p for p in updated_names if p not in team_a])
 
-    if st.button("Save Rosters & Proceed ➔", use_container_width=True):
+  if st.button("Save Rosters & Proceed ➔", use_container_width=True):
         if not team_a or not team_b:
-            st.error("Each team must have at least one player
+            st.error("Each team must have at least one player.")
+        else:
+            st.session_state.team_a_players = team_a
+            st.session_state.team_b_players = team_b
+            st.session_state.step = 4
+            st.rerun()
